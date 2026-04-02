@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DjoMart - Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #ccfbf1;
+            --accent: #f97316;
+            --bg-main: #fafafa;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+        
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 75px;
+        }
+        
+        /* ========== SHARED STYLES ========== */
+        .top-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .brand-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+        
+        .page-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            margin: 0;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-top: 12px;
+        }
+        
+        .search-box input {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px 12px 48px;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text-primary);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-link {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        /* ========== BOTTOM NAVIGATION ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            text-align: center;
+            padding: 6px 12px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item i {
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 4px;
+            transition: transform 0.25s ease;
+        }
+        
+        .nav-item span {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item.active i {
+            transform: scale(1.15);
+        }
+        
+        .nav-item:hover {
+            color: var(--primary);
+        }
+        
+        /* ========== PAGE CONTAINER ========== */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* ========== T1 - HOMEPAGE ========== */
+        .banner-section {
+            padding: 20px 16px;
+        }
+        
+        .banner-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 20px;
+            padding: 32px 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .banner-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(249,115,22,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .banner-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(13,148,136,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .banner-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .banner-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .banner-badge {
+            background: var(--accent);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .category-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+        }
+        
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-chip {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .category-chip:hover,
+        .category-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        @media (min-width: 576px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .product-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .product-image {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 2.5rem;
+        }
+        
+        .product-info {
+            padding: 12px;
+        }
+        
+        .product-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .product-sales {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        /* ========== T2 - CATEGORY ========== */
+        .category-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .category-toggle {
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+        
+        .category-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .category-products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .mini-product {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 10px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .mini-product:hover {
+            background: var(--primary-light);
+        }
+        
+        .mini-product-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            border-radius: 8px;
+            margin: 0 auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+        
+        .mini-product-name {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        
+        .store-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        
+        .store-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateX(4px);
+        }
+        
+        .store-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, #99f6e4 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .store-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .store-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .store-badge {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        /* ========== T3 - HISTORY ========== */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.25s ease;
+        }
+        
+        .filter-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .transaction-item {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .transaction-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .transaction-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .transaction-status {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .status-selesai {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-proses {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .transaction-product {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+        
+        .product-details h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .product-details .store-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .product-details .price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .transaction-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .total-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .total-amount {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .btn-action:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* ========== T4 - ADD PRODUCT ========== */
+        .form-section {
+            padding: 20px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            display: block;
+        }
+        
+        .form-control {
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            width: 100%;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            outline: none;
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .form-select {
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            outline: none;
+        }
+        
+        .image-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: var(--bg-card);
+        }
+        
+        .image-upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 16px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .upload-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .upload-text strong {
+            color: var(--primary);
+        }
+        
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+        
+        .preview-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .preview-item i {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+        }
+        
+        .stock-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stock-btn {
+            width: 44px;
+            height: 44px;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-card);
+            border-radius: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .stock-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .stock-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(13,148,136,0.3);
+        }
+        
+        /* ========== T5 - PROFILE ========== */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 24px 0 70px;
+        }
+        
+        .profile-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(255,255,255,0.4);
+        }
+        
+        .profile-avatar i {
+            font-size: 2.2rem;
+            color: white;
+        }
+        
+        .profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+        
+        .profile-phone {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .balance-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin: -40px 16px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .balance-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .balance-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .balance-icon {
+            color: var(--accent);
+        }
+        
+        .balance-amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .balance-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .balance-action {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .balance-action:hover {
+            background: var(--primary-light);
+        }
+        
+        .balance-action i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        .balance-action span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 0 16px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .menu-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f8fafc;
+        }
+        
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .menu-text {
+            flex-grow: 1;
+        }
+        
+        .menu-text h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .menu-text p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .menu-arrow {
+            color: var(--text-secondary);
+        }
+        
+        .logout-btn {
+            width: 100%;
+            background: #fef2f2;
+            color: #dc2626;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 12px;
+        }
+        
+        .logout-btn:hover {
+            background: #fee2e2;
+        }
+        
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page.active {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+        
+        .custom-toast {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 14px 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .custom-toast.success { border-left-color: var(--success); }
+        .custom-toast.error { border-left-color: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== T1 - HOMEPAGE ==================== -->
+    <div id="page-home" class="page active">
+        <header class="top-header">
+            <div class="container">
+                <a href="#" class="brand-logo">DjoMart</a>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Cari produk di DjoMart...">
+                </div>
+            </div>
+        </header>
+
+        <section class="banner-section">
+            <div class="container">
+                <div class="banner-card">
+                    <span class="banner-badge">Promo Spesial</span>
+                    <h2 class="banner-title">Diskon hingga 70%</h2>
+                    <p class="banner-subtitle">Belanja sekarang dan nikmati penawaran terbaik</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="px-3 mb-3">
+            <div class="container px-0">
+                <h3 class="section-title">Kategori</h3>
+                <div class="category-scroll">
+                    <span class="category-chip active" onclick="filterCategory('all')">Semua</span>
+                    <span class="category-chip" onclick="filterCategory('games')">Games</span>
+                    <span class="category-chip" onclick="filterCategory('elektronik')">Elektronik</span>
+                    <span class="category-chip" onclick="filterCategory('topup')">Top Up</span>
+                    <span class="category-chip" onclick="filterCategory('streaming')">Streaming</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="px-3">
+            <div class="container px-0">
+                <div class="section-header">
+                    <h3 class="section-title">Produk Terbaru</h3>
+                </div>
+                <div class="product-grid" id="productGrid">
+                    <!-- Products will be rendered by JS -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ==================== T2 - CATEGORY ==================== -->
+    <div id="page-category" class="page">
+        <header class="top-header">
+            <div class="container">
+                <a href="#" class="brand-logo">DjoMart</a>
+            </div>
+        </header>
+
+        <main class="container py-4">
+            <section class="mb-4">
+                <div class="section-header">
+                    <h3 class="section-title">Kategori Produk</h3>
+                    <a href="#" class="section-link">Lihat Semua</a>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Kategori 1 - Games</span>
+                        <i class="bi bi-chevron-down category-toggle"></i>
+                    </div>
+                    <div class="category-products" style="display: grid;">
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-phone"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-laptop"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-headphones"></i></div><div class="mini-product-name">Produk</div></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Kategori 2 - Elektronik</span>
+                        <i class="bi bi-chevron-down category-toggle collapsed"></i>
+                    </div>
+                    <div class="category-products" style="display: none;">
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-bag"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-watch"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-sunglasses"></i></div><div class="mini-product-name">Produk</div></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Kategori 3 - TopUp</span>
+                        <i class="bi bi-chevron-down category-toggle collapsed"></i>
+                    </div>
+                    <div class="category-products" style="display: none;">
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-cup-hot"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-egg-fried"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-cake2"></i></div><div class="mini-product-name">Produk</div></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Kategori 4 - Streaming</span>
+                        <i class="bi bi-chevron-down category-toggle collapsed"></i>
+                    </div>
+                    <div class="category-products" style="display: none;">
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-capsule"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-heart-pulse"></i></div><div class="mini-product-name">Produk</div></div>
+                        <div class="mini-product"><div class="mini-product-icon"><i class="bi bi-droplet"></i></div><div class="mini-product-name">Produk</div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-header">
+                    <h3 class="section-title">Rekomendasi Toko</h3>
+                    <a href="#" class="section-link">Lihat Semua</a>
+                </div>
+                
+                <div class="store-card" onclick="showToast('Membuka toko Store 1...', 'success')">
+                    <div class="store-avatar">S1</div>
+                    <div class="store-info flex-grow-1">
+                        <h4>Store 1</h4>
+                        <p>Detail Singkat Toko - Elektronik</p>
+                    </div>
+                    <span class="store-badge">Top Seller</span>
+                </div>
+                
+                <div class="store-card" onclick="showToast('Membuka toko Store 2...', 'success')">
+                    <div class="store-avatar">S2</div>
+                    <div class="store-info flex-grow-1">
+                        <h4>Store 2</h4>
+                        <p>Detail Singkat Toko - Fashion</p>
+                    </div>
+                    <span class="store-badge">Popular</span>
+                </div>
+                
+                <div class="store-card" onclick="showToast('Membuka toko Store 3...', 'success')">
+                    <div class="store-avatar">S3</div>
+                    <div class="store-info flex-grow-1">
+                        <h4>Store 3</h4>
+                        <p>Detail Singkat Toko - Makanan</p>
+                    </div>
+                    <span class="store-badge">New</span>
+                </div>
+                
+                <div class="store-card" onclick="showToast('Membuka toko Store 4...', 'success')">
+                    <div class="store-avatar">S4</div>
+                    <div class="store-info flex-grow-1">
+                        <h4>Store 4</h4>
+                        <p>Detail Singkat Toko - Kesehatan</p>
+                    </div>
+                    <span class="store-badge">Trusted</span>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ==================== T3 - HISTORY ==================== -->
+    <div id="page-history" class="page">
+        <header class="top-header">
+            <div class="container">
+                <a href="#" class="brand-logo">Riwayat Transaksi</a>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Cari nama produk atau toko...">
+                </div>
+            </div>
+        </header>
+
+        <main class="container py-4">
+            <div class="filter-tabs" id="filterTabs">
+                <span class="filter-tab active" data-filter="all">Semua</span>
+                <span class="filter-tab" data-filter="selesai">Selesai</span>
+                <span class="filter-tab" data-filter="proses">Diproses</span>
+                <span class="filter-tab" data-filter="pending">Pending</span>
+            </div>
+            
+            <div id="transactionList">
+                <!-- Transactions will be rendered by JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== T4 - ADD PRODUCT ==================== -->
+    <div id="page-add" class="page">
+        <header class="top-header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h1 class="page-title">Tambah Produk</h1>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">Pilih Kategori</label>
+                    <select class="form-select" id="productCategory">
+                        <option value="">Pilih kategori produk</option>
+                        <option value="elektronik">Kategori 1 - Elektronik</option>
+                        <option value="fashion">Kategori 2 - Fashion</option>
+                        <option value="makanan">Kategori 3 - Makanan</option>
+                        <option value="kesehatan">Kategori 4 - Kesehatan</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nama Produk</label>
+                    <input type="text" class="form-control" id="productName" placeholder="Masukkan nama produk">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nama Toko</label>
+                    <input type="text" class="form-control" id="storeName" placeholder="Masukkan nama toko">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Harga</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="border-radius: 12px 0 0 12px; border: 1.5px solid var(--border-color); background: #f8fafc; font-weight: 600;">Rp</span>
+                        <input type="number" class="form-control" id="productPrice" placeholder="0" style="border-radius: 0 12px 12px 0;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Stock</label>
+                    <div class="stock-input-group">
+                        <button class="stock-btn" onclick="updateStock(-1)">-</button>
+                        <span class="stock-value" id="stockValue">0</span>
+                        <button class="stock-btn" onclick="updateStock(1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Foto Produk</label>
+                    <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                        <div class="upload-icon"><i class="bi bi-image"></i></div>
+                        <p class="upload-text"><strong>Klik untuk upload</strong> atau drag & drop</p>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">PNG, JPG (max 5MB)</p>
+                        <input type="file" id="imageInput" accept="image/*" multiple hidden>
+                    </div>
+                    <div class="image-preview-grid">
+                        <div class="preview-item"><i class="bi bi-plus-lg"></i></div>
+                        <div class="preview-item"><i class="bi bi-plus-lg"></i></div>
+                        <div class="preview-item"><i class="bi bi-plus-lg"></i></div>
+                        <div class="preview-item"><i class="bi bi-plus-lg"></i></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Deskripsi Produk</label>
+                    <textarea class="form-control" id="productDesc" rows="4" placeholder="Masukkan deskripsi produk..."></textarea>
+                </div>
+                
+                <button class="btn-submit" onclick="submitProduct()">Simpan Produk</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== T5 - PROFILE ==================== -->
+    <div id="page-profile" class="page">
+        <header class="profile-header">
+            <div class="container">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h1 class="profile-name">Nama Akun</h1>
+                    <p class="profile-phone"><i class="bi bi-telephone me-1"></i>+62 812 3456 7890</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="balance-card">
+            <div class="balance-header">
+                <span class="balance-label">E-Money Lapak</span>
+                <i class="bi bi-wallet2 balance-icon"></i>
+            </div>
+            <div class="balance-amount">Rp 1.250.000</div>
+            <div class="balance-footer">
+                <div class="balance-action" onclick="showToast('Fitur Top Up', 'success')">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Top Up</span>
+                </div>
+                <div class="balance-action" onclick="showToast('Fitur Withdraw', 'success')">
+                    <i class="bi bi-arrow-down-circle"></i>
+                    <span>Withdraw</span>
+                </div>
+                <div class="balance-action" onclick="navigateTo('history')">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Riwayat</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-bag-check"></i></div>
+                <div class="stat-value">24</div>
+                <div class="stat-label">Total Transaksi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-heart"></i></div>
+                <div class="stat-value">8</div>
+                <div class="stat-label">Favorit</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <h3 class="section-title">Akun Saya</h3>
+            <div class="menu-card">
+                <div class="menu-item" onclick="showToast('Edit Profil', 'success')">
+                    <div class="menu-icon"><i class="bi bi-person-circle"></i></div>
+                    <div class="menu-text">
+                        <h4>Edit Profil</h4>
+                        <p>Ubah foto dan data diri</p>
+                    </div>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="showToast('Pengaturan', 'success')">
+                    <div class="menu-icon"><i class="bi bi-gear"></i></div>
+                    <div class="menu-text">
+                        <h4>Pengaturan</h4>
+                        <p>Notifikasi, keamanan, bahasa</p>
+                    </div>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="showToast('Pusat Bantuan', 'success')">
+                    <div class="menu-icon"><i class="bi bi-question-circle"></i></div>
+                    <div class="menu-text">
+                        <h4>Pusat Bantuan</h4>
+                        <p>FAQ dan hubungi kami</p>
+                    </div>
+                    <i class="bi bi-chevron-right menu-arrow"></i>
+                </div>
+            </div>
+            
+            <button class="logout-btn" onclick="showToast('Logout berhasil', 'success')">
+                <i class="bi bi-box-arrow-right me-2"></i>Keluar
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== BOTTOM NAVIGATION ==================== -->
+    <nav class="bottom-nav">
+        <div class="container">
+            <div class="d-flex justify-content-around">
+                <a class="nav-item active" data-page="home" onclick="navigateTo('home')">
+                    <i class="bi bi-house"></i>
+                    <span>Beranda</span>
+                </a>
+                <a class="nav-item" data-page="category" onclick="navigateTo('category')">
+                    <i class="bi bi-grid"></i>
+                    <span>Kategori</span>
+                </a>
+                <a class="nav-item" data-page="history" onclick="navigateTo('history')">
+                    <i class="bi bi-receipt"></i>
+                    <span>Transaksi</span>
+                </a>
+                <a class="nav-item" data-page="add" onclick="navigateTo('add')">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Tambah</span>
+                </a>
+                <a class="nav-item" data-page="profile" onclick="navigateTo('profile')">
+                    <i class="bi bi-person"></i>
+                    <span>Profil</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ========== DATA ==========
+        const products = [
+            { id: 1, name: 'Smartphone Pro Max', category: 'elektronik', price: 12500000, sales: '2.5rb', icon: 'bi-phone' },
+            { id: 2, name: 'Laptop Gaming 15"', category: 'elektronik', price: 18500000, sales: '1.2rb', icon: 'bi-laptop' },
+            { id: 3, name: 'Robux 800', category: 'games', price: 81200, sales: '5.8rb', icon: 'bi-bag' },
+            { id: 4, name: 'Son Of The Forest', category: 'games', price: 499000, sales: '890', icon: 'bi-shoe-prints' },
+            { id: 5, name: 'Youtube Premium 1 Bulan', category: 'streaming', price: 39000, sales: '3.2rb', icon: 'bi-cup-hot' },
+            { id: 6, name: 'BiliBili Premium 1 Bulan', category: 'streaming', price: 75000, sales: '7.1rb', icon: 'bi-box' },
+            { id: 7, name: '400 Robux', category: 'topup', price: 78100, sales: '4.5rb', icon: 'bi-capsule' },
+            { id: 8, name: 'Weekly Diamond Pass', category: 'topup', price: 28700, sales: '12rb', icon: 'bi-shield-check' },
+            { id: 9, name: 'Headset Bluetooth', category: 'elektronik', price: 350000, sales: '2.1rb', icon: 'bi-headphones' },
+            { id: 10, name: 'Akun Mobile Legends Premium', category: 'games', price: 285000, sales: '1.8rb', icon: 'bi-tag' },
+            { id: 11, name: 'Netflix 3 Bulan', category: 'streaming', price: 189000, sales: '980', icon: 'bi-droplet' },
+            { id: 12, name: 'Steam Wallet 400.000', category: 'topup', price: 849000, sales: '15rb', icon: 'bi-droplet-half' }
+        ];
+
+        const transactions = [
+            { id: 1, product: 'Smartphone Pro Max', store: 'Store 1', price: 12500000, date: '12 Maret 2026, 14:30', status: 'selesai' },
+            { id: 2, product: 'Robux 800', store: 'Store 2', price: 81200, date: '11 Maret 2026, 09:15', status: 'proses' },
+            { id: 3, product: 'Youtube Premium 1 Bulan', store: 'Store 3', price: 39000, date: '10 Maret 2026, 18:45', status: 'pending' },
+            { id: 4, product: '400 Robux', store: 'Store 4', price: 78100, date: '8 Maret 2026, 11:20', status: 'selesai' },
+            { id: 5, product: 'Headset Bluetooth', store: 'Store 1', price: 350000, date: '5 Maret 2026, 16:00', status: 'selesai' },
+            { id: 6, product: 'Son Of The Forest', store: 'Store 2', price: 499000, date: '3 Maret 2026, 10:30', status: 'proses' }
+        ];
+
+        // ========== STATE ==========
+        let currentPage = 'home';
+        let currentFilter = 'all';
+        let stock = 0;
+
+        // ========== NAVIGATION ==========
+        function navigateTo(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            
+            // Show target page
+            const targetPage = document.getElementById('page-' + page);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update nav active state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.page === page);
+            });
+            
+            currentPage = page;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ========== RENDER PRODUCTS ==========
+        function renderProducts(filter = 'all') {
+            const grid = document.getElementById('productGrid');
+            let filteredProducts = products;
+            
+            if (filter !== 'all') {
+                filteredProducts = products.filter(p => p.category === filter);
+            }
+            
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card" onclick="showToast('Membuka ${product.name}...', 'success')">
+                    <div class="product-image"><i class="bi ${product.icon}"></i></div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">Rp ${product.price.toLocaleString('id-ID')}</div>
+                        <div class="product-sales">${product.sales} Penjualan</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(category) {
+            document.querySelectorAll('.category-chip').forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts(category);
+        }
+
+        // ========== RENDER TRANSACTIONS ==========
+        function renderTransactions(filter = 'all') {
+            const list = document.getElementById('transactionList');
+            let filteredTransactions = transactions;
+            
+            if (filter !== 'all') {
+                filteredTransactions = transactions.filter(t => t.status === filter);
+            }
+            
+            list.innerHTML = filteredTransactions.map(t => `
+                <div class="transaction-item">
+                    <div class="transaction-header">
+                        <span class="transaction-date">${t.date}</span>
+                        <span class="transaction-status status-${t.status}">${t.status === 'selesai' ? 'Selesai' : t.status === 'proses' ? 'Diproses' : 'Pending'}</span>
+                    </div>
+                    <div class="transaction-product">
+                        <div class="product-thumb"><i class="bi bi-box"></i></div>
+                        <div class="product-details">
+                            <h4>${t.product}</h4>
+                            <p class="store-name"><i class="bi bi-shop me-1"></i>${t.store}</p>
+                            <span class="price">Rp ${t.price.toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                    <div class="transaction-footer">
+                        <div>
+                            <span class="total-label">Total Pembayaran</span>
+                            <div class="total-amount">Rp ${t.price.toLocaleString('id-ID')}</div>
+                        </div>
+                        <button class="btn-action">${t.status === 'selesai' ? 'Beli Lagi' : t.status === 'proses' ? 'Lacak' : 'Bayar'}</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== TOGGLE CATEGORY ==========
+        function toggleCategory(header) {
+            const products = header.nextElementSibling;
+            const toggle = header.querySelector('.category-toggle');
+            
+            if (products.style.display === 'none') {
+                products.style.display = 'grid';
+                toggle.classList.remove('collapsed');
+            } else {
+                products.style.display = 'none';
+                toggle.classList.add('collapsed');
+            }
+        }
+
+        // ========== STOCK UPDATE ==========
+        function updateStock(change) {
+            stock = Math.max(0, stock + change);
+            document.getElementById('stockValue').textContent = stock;
+        }
+
+        // ========== SUBMIT PRODUCT ==========
+        function submitProduct() {
+            const name = document.getElementById('productName').value;
+            const category = document.getElementById('productCategory').value;
+            const store = document.getElementById('storeName').value;
+            const price = document.getElementById('productPrice').value;
+            
+            if (!name || !category || !store || !price) {
+                showToast('Mohon lengkapi semua field!', 'error');
+                return;
+            }
+            
+            showToast('Produk berhasil disimpan!', 'success');
+            
+            // Reset form
+            document.getElementById('productName').value = '';
+            document.getElementById('productCategory').value = '';
+            document.getElementById('storeName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productDesc').value = '';
+            stock = 0;
+            document.getElementById('stockValue').textContent = '0';
+        }
+
+        // ========== TOAST NOTIFICATION ==========
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast ' + type;
+            toast.innerHTML = `
+                <i class="bi ${type === 'success' ? 'bi-check-circle text-success' : 'bi-exclamation-circle text-danger'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            renderTransactions();
+            
+            // Filter tabs for history
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    renderTransactions(this.dataset.filter);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
